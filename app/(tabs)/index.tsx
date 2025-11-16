@@ -1,19 +1,38 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
+import { Image, Modal, Pressable, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function EcoBouyApp() {
+
+  const [modalVisible, setModalVisible] = useState(false);
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
       {/* Notification Icon */}
-      <TouchableOpacity style={styles.notificationIcon}>
+      <TouchableOpacity style={styles.notificationIcon} onPress={() => setModalVisible(true)}>
         <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3602/3602145.png' }} style={styles.bellIcon} />
         <View style={styles.notificationBadge}>
           <Text style={styles.notificationText}>2</Text>
         </View>
       </TouchableOpacity>
+            <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)} // Android back button closes modal
+      >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Notifications</Text>
+            <Text>You have 2 new notifications.</Text>
+            {/* Add your notification details or list here */}
+            <Pressable style={styles.closeButton} onPress={() => setModalVisible(false)}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
 
       {/* Live Dashboard Button */}
       <TouchableOpacity style={styles.dashboardButton}>
@@ -87,6 +106,42 @@ const styles = StyleSheet.create({
   notificationText: {
     color: 'white',
     fontSize: 10,
+    fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    width: '80%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#333',
+  },
+  closeButton: {
+    marginTop: 20,
+    backgroundColor: '#2193B0',
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
     fontWeight: 'bold',
   },
   dashboardButton: {

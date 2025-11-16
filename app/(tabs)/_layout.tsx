@@ -12,29 +12,29 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].icon,
-        tabBarStyle: {
-      backgroundColor: Colors[colorScheme ?? 'light'].background,
-      borderTopWidth: 0,
-      elevation: 5,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: -3 },
-      shadowOpacity: 0.1,
-      shadowRadius: 5,
-      height: 65,
-      paddingBottom: 10,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-    },
-    tabBarLabelStyle: {
-      fontSize: 12,
-      fontWeight: '600',
-      marginBottom: 5,
-    },
-    headerShown: false,
-    tabBarButton: HapticTab,
-  }}
+          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+          tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].icon,
+          tabBarStyle: {
+          backgroundColor: Colors[colorScheme ?? 'light'].background,
+          borderTopWidth: 0,
+          elevation: 5,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -3 },
+          shadowOpacity: 0.1,
+          shadowRadius: 5,
+          height: 65,
+          paddingBottom: 10,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+          marginBottom: 5,
+        },
+        headerShown: false,
+        tabBarButton: HapticTab,
+      }}
 >
   <Tabs.Screen
     name="index"

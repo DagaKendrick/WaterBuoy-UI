@@ -1,6 +1,6 @@
+import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { MaterialIcons, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function EcoBuoyDashboard() {
   return (

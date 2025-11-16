@@ -1,10 +1,12 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Modal, Pressable, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function EcoBouyApp() {
-
+  const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -35,7 +37,8 @@ export default function EcoBouyApp() {
       </Modal>
 
       {/* Live Dashboard Button */}
-      <TouchableOpacity style={styles.dashboardButton}>
+      <TouchableOpacity style={styles.dashboardButton} onPress={() => router.push('/(tabs)/dashboard')}>
+        
         <LinearGradient
           colors={['#83d475', '#2ded2d']} // Example gradient colors
           start={{ x: 0, y: 0 }}

@@ -1,16 +1,33 @@
 import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Redirect } from "expo-router";
 
 export default function TabLayout() {
+  // ALL HOOKS MUST RUN FIRST
+  const [loggedIn, setLoggedIn] = useState<null | boolean>(null);
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const value = await AsyncStorage.getItem("isLoggedIn");
+      setLoggedIn(value === "true");
+    };
+    checkLogin();
+  }, []);
+
+  // Still checking...
+  if (loggedIn === null) return null;
+
+  // Redirect once login state is known
+  if (!loggedIn) return <Redirect href="/(auth)/login" />;
 
   return (
     <Tabs
@@ -19,7 +36,6 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarActiveTintColor: theme.tint,
         tabBarInactiveTintColor: theme.icon,
-        // Floating Tab Bar
         tabBarStyle: {
           position: 'absolute',
           bottom: 22,
@@ -28,22 +44,15 @@ export default function TabLayout() {
           height: 65,
           borderRadius: 35,
           borderCurve: 'continuous',
-
-          // remove default styling
           borderTopWidth: 0,
-          backgroundColor: 'transparent', // required for BlurView
+          backgroundColor: 'transparent',
           elevation: 0,
         },
-        // blur container wrapper
         tabBarBackground: () => (
           <BlurView
             intensity={35}
             tint={colorScheme === 'dark' ? 'dark' : 'light'}
-            style={{
-              flex: 1,
-              borderRadius: 35,
-              borderCurve: 'continuous',
-            }}
+            style={{ flex: 1, borderRadius: 35, borderCurve: 'continuous' }}
           />
         ),
         tabBarLabelStyle: {
@@ -53,7 +62,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => (
@@ -66,7 +75,7 @@ export default function TabLayout() {
         name="dashboard"
         options={{
           title: 'Dashboard',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <MaterialIcons name="dashboard" size={24} color={color} />
           ),
         }}
@@ -76,7 +85,7 @@ export default function TabLayout() {
         name="analytics"
         options={{
           title: 'Analytics',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Ionicons name="analytics" size={24} color={color} />
           ),
         }}

@@ -2,9 +2,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Modal, Pressable, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export default function EcoBouyApp() {
   const router = useRouter();
+
   const [modalVisible, setModalVisible] = useState(false);
 
   return (

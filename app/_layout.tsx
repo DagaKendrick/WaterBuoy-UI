@@ -5,6 +5,8 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
@@ -14,6 +16,8 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen name="profile" options={{ headerShown: false }}
+/>
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

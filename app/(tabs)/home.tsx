@@ -2,8 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Modal, Pressable, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 
 export default function EcoBouyApp() {
@@ -15,14 +14,21 @@ export default function EcoBouyApp() {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      {/* Notification Icon */}
-      <TouchableOpacity style={styles.notificationIcon} onPress={() => setModalVisible(true)}>
-        <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3602/3602145.png' }} style={styles.bellIcon} />
-        <View style={styles.notificationBadge}>
-          <Text style={styles.notificationText}>2</Text>
-        </View>
-      </TouchableOpacity>
-            <Modal
+      {/* Notification and Profile Icons */}
+      <View style={styles.headerIcons}>
+        <TouchableOpacity style={styles.iconContainer} onPress={() => setModalVisible(true)}>
+          <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3602/3602145.png' }} style={styles.bellIcon} />
+          <View style={styles.notificationBadge}>
+            <Text style={styles.notificationText}>2</Text>
+          </View>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.iconContainer} onPress={() => router.push('/profile')}>
+          <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/847/847969.png' }} style={styles.profileIcon} />
+        </TouchableOpacity>
+      </View>
+
+      <Modal
         animationType="fade"
         transparent={true}
         visible={modalVisible}
@@ -88,13 +94,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 50,
   },
-  notificationIcon: {
+  headerIcons: {
     position: 'absolute',
     top: 20,
     right: 20,
     flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  iconContainer: {
+    position: 'relative',
   },
   bellIcon: {
+    width: 24,
+    height: 24,
+    tintColor: '#4f4f4f',
+  },
+  profileIcon: {
     width: 24,
     height: 24,
     tintColor: '#4f4f4f',

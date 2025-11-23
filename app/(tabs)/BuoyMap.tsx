@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function BuoyMap() {
   return (
@@ -14,26 +15,22 @@ export default function BuoyMap() {
           longitudeDelta: 0.1,
         }}
       >
-        {/* Example Buoy Markers in CDO */}
-        <Marker
-          coordinate={{ latitude: 8.485, longitude: 124.650 }}
-          title="Buoy #1"
-          description="Normal Operation"
-        />
 
-        <Marker
-          coordinate={{ latitude: 8.480, longitude: 124.640 }}
-          pinColor="red"
-          title="Buoy #3"
-          description="Requires Maintenance"
-        />
+        {/* Buoy #1 with Icon */}
+        <Marker coordinate={{ latitude: 8.485, longitude: 124.650 }}>
+          <Ionicons name="location-sharp" size={32} color="blue" />
+        </Marker>
 
-        <Marker
-          coordinate={{ latitude: 8.490, longitude: 124.660 }}
-          pinColor="orange"
-          title="Buoy #2"
-          description="High Turbidity Detected"
-        />
+        {/* Buoy #2 */}
+        <Marker coordinate={{ latitude: 8.490, longitude: 124.660 }}>
+          <Ionicons name="location-sharp" size={32} color="orange" />
+        </Marker>
+
+        {/* Buoy #3 */}
+        <Marker coordinate={{ latitude: 8.480, longitude: 124.640 }}>
+          <Ionicons name="location-sharp" size={32} color="red" />
+        </Marker>
+
       </MapView>
     </View>
   );
@@ -48,4 +45,3 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 });
-

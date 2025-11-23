@@ -8,28 +8,28 @@ export default function BuoyMap() {
       <MapView
         style={styles.map}
         initialRegion={{
-          latitude: 1.290270,
-          longitude: 103.851959,
+          latitude: 8.482,
+          longitude: 124.647,
           latitudeDelta: 0.1,
           longitudeDelta: 0.1,
         }}
       >
-        {/* Example Buoy Markers */}
+        {/* Example Buoy Markers in CDO */}
         <Marker
-          coordinate={{ latitude: 1.300, longitude: 103.860 }}
+          coordinate={{ latitude: 8.485, longitude: 124.650 }}
           title="Buoy #1"
           description="Normal Operation"
         />
 
         <Marker
-          coordinate={{ latitude: 1.280, longitude: 103.840 }}
+          coordinate={{ latitude: 8.480, longitude: 124.640 }}
           pinColor="red"
           title="Buoy #3"
           description="Requires Maintenance"
         />
 
         <Marker
-          coordinate={{ latitude: 1.310, longitude: 103.830 }}
+          coordinate={{ latitude: 8.490, longitude: 124.660 }}
           pinColor="orange"
           title="Buoy #2"
           description="High Turbidity Detected"
@@ -48,3 +48,4 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 });
+

@@ -1,13 +1,12 @@
-import { BlurView } from 'expo-blur';
-import { Tabs } from 'expo-router';
-import React, { useEffect, useState } from 'react';
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Redirect } from "expo-router";
+import { BlurView } from 'expo-blur';
+import { Redirect, Tabs } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 
 export default function TabLayout() {
   // ALL HOOKS MUST RUN FIRST
@@ -38,7 +37,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: theme.icon,
         tabBarStyle: {
           position: 'absolute',
-          bottom: 22,
+          bottom: 23,
           left: 24,
           right: 24,
           height: 65,
@@ -47,6 +46,8 @@ export default function TabLayout() {
           borderTopWidth: 0,
           backgroundColor: 'transparent',
           elevation: 0,
+          paddingTop: 10,
+          paddingBottom: 10,
         },
         tabBarBackground: () => (
           <BlurView

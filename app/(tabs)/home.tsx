@@ -2,6 +2,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Modal, Pressable, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import TrashCardImage from '../../assets/images/favicon.png';
+import EcoBouyLogoImage from '../../assets/images/icon.png';
+
 
 
 
@@ -61,7 +64,7 @@ export default function EcoBouyApp() {
 
       {/* EcoBouy Logo and Text */}
       <View style={styles.logoContainer}>
-        <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3067/3067850.png' }} style={styles.ecoBouyLogo} />
+        <Image source={EcoBouyLogoImage} style={styles.ecoBouyLogo} />
         <Text style={styles.ecoBouyText}>EcoBouy</Text>
       </View>
       <Text style={styles.tagline}>Smart Floating Trash Trap with IOT Monitoring</Text>
@@ -69,10 +72,9 @@ export default function EcoBouyApp() {
       {/* Main Content Card */}
       <View style={styles.card}>
         <Image
-          source={{ uri: 'https://images.unsplash.com/photo-1549725969-92d52cfc2162?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dW5kZXJ3YXRlciUyMGRpdmVyfGVufDB8fDB8fHww&w=1000&q=80' }} // Replace with your image
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
+        source={TrashCardImage}
+        style={styles.cardImage}
+        resizeMode="cover"/>
         <LinearGradient
           colors={['transparent', 'rgba(0,0,0,0.7)']}
           style={styles.overlay}

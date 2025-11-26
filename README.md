@@ -1,2 +1,1 @@
-Redante Commit
-Hi
+It’s an IoT-enabled floating trash trap designed to automatically capture debris in waterways and send real time status updates, making cleanups faster, easier and far less dependent on manual inspection.

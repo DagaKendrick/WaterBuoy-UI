@@ -41,19 +41,24 @@ export default function TabLayout() {
           left: 24,
           right: 24,
           height: 65,
-          borderRadius: 35,
+          borderRadius: 32.5, // Half of height to make it perfectly round
           borderCurve: 'continuous',
           borderTopWidth: 0,
           backgroundColor: 'transparent',
           elevation: 0,
           paddingTop: 10,
           paddingBottom: 10,
+          overflow: 'hidden',
         },
         tabBarBackground: () => (
           <BlurView
             intensity={35}
             tint={colorScheme === 'dark' ? 'dark' : 'light'}
-            style={{ flex: 1, borderRadius: 35, borderCurve: 'continuous' }}
+            style={{ 
+              flex: 1, 
+              borderRadius: 32.5, // Match the tabBarStyle borderRadius
+              borderCurve: 'continuous',
+            }}
           />
         ),
         tabBarLabelStyle: {
@@ -93,19 +98,19 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="profile"
-        options={{
-          href: null, // This hides it from the tab bar
-        }}
-      />
-      
-      <Tabs.Screen
         name="BuoyMap"
         options={{
-          title: 'BuoyMap',
+          title: 'Map',
           tabBarIcon: ({ color }) => (
             <Ionicons name="map" size={24} color={color} />
           ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="profile"
+        options={{
+          href: null, // This hides it from the tab bar
         }}
       />
     </Tabs>

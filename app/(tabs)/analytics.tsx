@@ -1,7 +1,85 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+// Define TypeScript interfaces
+interface AnalyticsData {
+  wasteCollected: string;
+  co2Prevented: string;
+  waterQuality: string;
+}
+
+interface SampleData {
+  [key: string]: AnalyticsData;
+}
+
+// Sample data for different dates
+const sampleData: SampleData = {
+  '2024-01-15': {
+    wasteCollected: '24.8 tons',
+    co2Prevented: '1.8 tons',
+    waterQuality: '+18%'
+  },
+  '2024-01-14': {
+    wasteCollected: '22.5 tons',
+    co2Prevented: '1.6 tons',
+    waterQuality: '+16%'
+  },
+  '2024-01-13': {
+    wasteCollected: '20.1 tons',
+    co2Prevented: '1.4 tons',
+    waterQuality: '+15%'
+  },
+  '2024-01-12': {
+    wasteCollected: '18.7 tons',
+    co2Prevented: '1.3 tons',
+    waterQuality: '+14%'
+  }
+};
+
 export default function AnalyticsScreen() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+
+  const formatDate = (date: Date) => {
+    return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+  };
+
+  const getCurrentData = (): AnalyticsData => {
+    const dateKey = formatDate(selectedDate);
+    return sampleData[dateKey] || {
+      wasteCollected: '0 tons',
+      co2Prevented: '0 tons',
+      waterQuality: '0%'
+    };
+  };
+
+  const onDateChange = (event: any, date?: Date) => {
+    setShowDatePicker(false);
+    if (date) {
+      setSelectedDate(date);
+      setShowCalendar(false);
+    }
+  };
+
+  const handleDateSelect = (daysAgo: number) => {
+    const newDate = new Date();
+    newDate.setDate(newDate.getDate() - daysAgo);
+    setSelectedDate(newDate);
+    setShowCalendar(false);
+  };
+
+  const handlePickSpecificDate = () => {
+    setShowCalendar(false);
+    setTimeout(() => {
+      setShowDatePicker(true);
+    }, 100);
+  };
+
+  const currentData = getCurrentData();
+
   return (
     <View style={styles.container}>
       {/* Header Section */}
@@ -11,9 +89,19 @@ export default function AnalyticsScreen() {
       </Text>
 
       {/* Date Range Button */}
-      <TouchableOpacity style={styles.dateButton} activeOpacity={0.7}>
+      <TouchableOpacity 
+        style={styles.dateButton} 
+        activeOpacity={0.7}
+        onPress={() => setShowCalendar(true)}
+      >
         <Ionicons name="calendar-outline" size={18} color="#374151" />
-        <Text style={styles.dateButtonText}>Date Range</Text>
+        <Text style={styles.dateButtonText}>
+          {selectedDate.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+          })}
+        </Text>
       </TouchableOpacity>
 
       {/* Cards Container */}
@@ -22,8 +110,13 @@ export default function AnalyticsScreen() {
         <View style={styles.card}>
           <View style={styles.cardText}>
             <Text style={styles.cardTitle}>Total Waste Collected</Text>
-            <Text style={styles.cardValue}>24.8 tons</Text>
-            <Text style={styles.cardNote}>+2 this week</Text>
+            <Text style={styles.cardValue}>{currentData.wasteCollected}</Text>
+            <Text style={styles.cardNote}>
+              {selectedDate.toDateString() === new Date().toDateString() 
+                ? '+2 this week' 
+                : 'Historical data'
+              }
+            </Text>
           </View>
           <View style={[styles.iconContainer, { backgroundColor: '#D1FAE5' }]}>
             <MaterialCommunityIcons name="chart-bar" size={24} color="#04803A" />
@@ -34,8 +127,13 @@ export default function AnalyticsScreen() {
         <View style={styles.card}>
           <View style={styles.cardText}>
             <Text style={styles.cardTitle}>CO2 Emissions Prevented</Text>
-            <Text style={styles.cardValue}>1.8 tons</Text>
-            <Text style={[styles.cardNote, { color: '#059669' }]}>Carbon Footprint reduced</Text>
+            <Text style={styles.cardValue}>{currentData.co2Prevented}</Text>
+            <Text style={[styles.cardNote, { color: '#059669' }]}>
+              {selectedDate.toDateString() === new Date().toDateString() 
+                ? 'Carbon Footprint reduced' 
+                : 'Historical impact'
+              }
+            </Text>
           </View>
           <View style={[styles.iconContainer, { backgroundColor: '#DBEAFE' }]}>
             <FontAwesome5 name="leaf" size={22} color="#2563EB" />
@@ -46,18 +144,104 @@ export default function AnalyticsScreen() {
         <View style={styles.card}>
           <View style={styles.cardText}>
             <Text style={styles.cardTitle}>Water Quality Improvement</Text>
-            <Text style={styles.cardValue}>+18 %</Text>
-            <Text style={[styles.cardNote, { color: '#7C3AED' }]}>Since Deployment</Text>
+            <Text style={styles.cardValue}>{currentData.waterQuality}</Text>
+            <Text style={[styles.cardNote, { color: '#7C3AED' }]}>
+              {selectedDate.toDateString() === new Date().toDateString() 
+                ? 'Since Deployment' 
+                : 'On selected date'
+              }
+            </Text>
           </View>
           <View style={[styles.iconContainer, { backgroundColor: '#EDE9FE' }]}>
             <MaterialCommunityIcons name="water" size={26} color="#7C3AED" />
           </View>
         </View>
       </View>
+
+      {/* Date Picker */}
+      {showDatePicker && (
+        <DateTimePicker
+          value={selectedDate}
+          mode="date"
+          display="default"
+          onChange={onDateChange}
+          maximumDate={new Date()}
+        />
+      )}
+
+      {/* Custom Calendar Modal */}
+      <Modal
+        visible={showCalendar}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowCalendar(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select Date</Text>
+            
+            <TouchableOpacity 
+              style={styles.dateOption}
+              onPress={handlePickSpecificDate}
+            >
+              <Ionicons name="calendar" size={20} color="#2563EB" />
+              <Text style={styles.dateOptionText}>Pick specific date</Text>
+            </TouchableOpacity>
+
+            <ScrollView style={styles.quickDatesContainer}>
+              <Text style={styles.quickDatesTitle}>Quick Select</Text>
+              
+              <TouchableOpacity 
+                style={styles.quickDateOption}
+                onPress={() => handleDateSelect(0)}
+              >
+                <Text style={styles.quickDateText}>Today</Text>
+                <Text style={styles.quickDateSubtext}>
+                  {new Date().toLocaleDateString()}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.quickDateOption}
+                onPress={() => handleDateSelect(1)}
+              >
+                <Text style={styles.quickDateText}>Yesterday</Text>
+                <Text style={styles.quickDateSubtext}>
+                  {new Date(Date.now() - 86400000).toLocaleDateString()}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.quickDateOption}
+                onPress={() => handleDateSelect(7)}
+              >
+                <Text style={styles.quickDateText}>Last Week</Text>
+                <Text style={styles.quickDateSubtext}>7 days ago</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.quickDateOption}
+                onPress={() => handleDateSelect(30)}
+              >
+                <Text style={styles.quickDateText}>Last Month</Text>
+                <Text style={styles.quickDateSubtext}>30 days ago</Text>
+              </TouchableOpacity>
+            </ScrollView>
+
+            <TouchableOpacity 
+              style={styles.closeButton}
+              onPress={() => setShowCalendar(false)}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
+// Your existing styles remain the same...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -68,13 +252,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: '700',
-    color: '#1D4ED8', // blue-800
+    color: '#1D4ED8',
     lineHeight: 34,
   },
   subtitle: {
     marginTop: 6,
     fontSize: 14,
-    color: '#6B7280', // gray-500
+    color: '#6B7280',
     lineHeight: 20,
   },
   dateButton: {
@@ -83,7 +267,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 14,
     borderWidth: 1,
-    borderColor: '#D1D5DB', // gray-300
+    borderColor: '#D1D5DB',
     borderRadius: 8,
     alignSelf: 'flex-start',
     marginTop: 20,
@@ -91,7 +275,7 @@ const styles = StyleSheet.create({
   dateButtonText: {
     marginLeft: 6,
     fontSize: 14,
-    color: '#374151', // gray-700
+    color: '#374151',
   },
   cardsContainer: {
     marginTop: 30,
@@ -104,12 +288,10 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    // Shadow for iOS
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
-    // Elevation for Android
     elevation: 2,
   },
   cardText: {
@@ -118,13 +300,13 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151', // gray-700
+    color: '#374151',
   },
   cardValue: {
     marginTop: 4,
     fontSize: 20,
     fontWeight: '700',
-    color: '#111827', // gray-900
+    color: '#111827',
   },
   cardNote: {
     marginTop: 6,
@@ -136,5 +318,76 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    width: '85%',
+    maxHeight: '70%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1F2937',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  dateOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  dateOptionText: {
+    marginLeft: 12,
+    fontSize: 16,
+    color: '#374151',
+    fontWeight: '600',
+  },
+  quickDatesContainer: {
+    maxHeight: 200,
+  },
+  quickDatesTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 12,
+  },
+  quickDateOption: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  quickDateText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  quickDateSubtext: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 2,
+  },
+  closeButton: {
+    backgroundColor: '#2563EB',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

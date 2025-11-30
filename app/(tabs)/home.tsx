@@ -53,7 +53,7 @@ export default function EcoBouyApp() {
       <TouchableOpacity style={styles.dashboardButton} onPress={() => router.push('/(tabs)/dashboard')}>
         
         <LinearGradient
-          colors={['#83d475', '#2ded2d']} // Example gradient colors
+          colors={['#1D4ED8', '#2a2297ff']} // Example gradient colors
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.gradientButton}

@@ -98,6 +98,16 @@ export default function TabLayout() {
           href: null, // This hides it from the tab bar
         }}
       />
+      
+      <Tabs.Screen
+        name="BuoyMap"
+        options={{
+          title: 'BuoyMap',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="map" size={24} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

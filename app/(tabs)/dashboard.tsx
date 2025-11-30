@@ -1,6 +1,8 @@
 import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Link } from 'expo-router';
+
 
 export default function EcoBuoyDashboard() {
   return (
@@ -20,18 +22,21 @@ export default function EcoBuoyDashboard() {
       {/* Cards */}
       <View style={styles.cardsContainer}>
         {/* Active Buoys Card */}
-        <View style={styles.card}>
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>Active Buoys</Text>
-            <Text style={styles.cardValue}>15</Text>
-            <View style={styles.cardNoteRow}>
-              <MaterialCommunityIcons name="wave" size={12} color="#6B7280" />
-              <Text style={styles.cardNote}>+2 this week</Text>
-            </View>
-          </View>
-          <MaterialCommunityIcons name="waves" size={28} color="#2563EB" />
-        </View>
 
+     <Link href="/(tabs)/BuoyMap" asChild>
+      <TouchableOpacity style={styles.card}>
+        <View style={styles.cardContent}>
+          <Text style={styles.cardTitle}>Active Buoys</Text>
+          <Text style={styles.cardValue}>7</Text>
+          <View style={styles.cardNoteRow}>
+            <MaterialCommunityIcons name="wave" size={12} color="#6B7280" />
+            <Text style={styles.cardNote}>+2 this week</Text>
+          </View>
+        </View>
+        <MaterialCommunityIcons name="waves" size={28} color="#2563EB" />
+      </TouchableOpacity>
+      </Link>
+   
         {/* Trash Collected Card */}
         <View style={styles.card}>
           <View style={styles.cardContent}>

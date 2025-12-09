@@ -21,10 +21,7 @@ export default function BuoyMap() {
     7: { name: "Buoy 7 – Umalag River", trash: "3 kg of aluminum cans" },
   };
 
-  const openPopup = (id: number) => {
-    setSelectedBuoy(buoyData[id]);
-  };
-
+  const openPopup = (id: number) => setSelectedBuoy(buoyData[id]);
   const closePopup = () => setSelectedBuoy(null);
 
   return (

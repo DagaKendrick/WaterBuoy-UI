@@ -1,13 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import api from "hooks/http";
 import { useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 
 export default function Login() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -15,15 +17,65 @@ export default function Login() {
       return;
     }
 
-    // Hardcoded credentials
-    const validUsername = "admin";
-    const validPassword = "12345";
+    setLoading(true); // Start loading
 
-    if (username === validUsername && password === validPassword) {
-      await AsyncStorage.setItem("isLoggedIn", "true");
-      router.replace("/(tabs)/home"); // navigate without back button
-    } else {
-      Alert.alert("Invalid Credentials", "Username or password is incorrect.");
+    try {
+      // Make API call to your login endpoint
+      const response = await api.post("/login", {
+        username: username, // or email depending on your API
+        password: password,
+      });
+
+      // Check if login was successful based on your API response structure
+      if (response.data.success || response.data.token) {
+        // Store the authentication token if your API returns one
+        if (response.data.token) {
+          await AsyncStorage.setItem("authToken", response.data.token);
+        }
+        
+        // Store user data if needed
+        if (response.data.user) {
+          await AsyncStorage.setItem("userData", JSON.stringify(response.data.user));
+        }
+        
+        // Set login status
+        await AsyncStorage.setItem("isLoggedIn", "true");
+        
+        // Navigate to home
+        router.replace("/(tabs)/home");
+      } else {
+        // Handle API-specific error messages
+        const errorMessage = response.data.message || "Invalid credentials";
+        Alert.alert("Login Failed", errorMessage);
+      }
+    } catch (error: any) {
+      // Handle different types of errors
+      let errorMessage = "An error occurred during login";
+      
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        if (error.response.status === 401) {
+          errorMessage = "Invalid username or password";
+        } else if (error.response.status === 400) {
+          errorMessage = "Bad request. Please check your input.";
+        } else if (error.response.status === 500) {
+          errorMessage = "Server error. Please try again later.";
+        } else if (error.response.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        errorMessage = "No response from server. Check your connection.";
+      } else {
+        // Something happened in setting up the request
+        errorMessage = error.message || "Network error";
+      }
+      
+      Alert.alert("Login Error", errorMessage);
+      console.error("Login error:", error);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -39,14 +91,15 @@ export default function Login() {
 
       <View style={styles.loginCard}>
         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Gmail</Text>
+          <Text style={styles.inputLabel}>Username / Email</Text> {/* Changed label */}
           <TextInput
             style={styles.input}
-            placeholder="Joyelee@gmail.com"
+            placeholder="Enter your username or email"
             placeholderTextColor="#999"
             autoCapitalize="none"
             value={username}
             onChangeText={setUsername}
+            editable={!loading} // Disable when loading
           />
         </View>
 
@@ -59,6 +112,7 @@ export default function Login() {
             secureTextEntry
             value={password}
             onChangeText={setPassword}
+            editable={!loading} // Disable when loading
           />
         </View>
 
@@ -66,8 +120,14 @@ export default function Login() {
           <Text style={styles.forgotPasswordText}>Forgot password?</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>SIGN IN</Text>
+        <TouchableOpacity 
+          style={[styles.button, loading && styles.buttonDisabled]} 
+          onPress={handleLogin}
+          disabled={loading} // Disable button when loading
+        >
+          <Text style={styles.buttonText}>
+            {loading ? "LOGGING IN..." : "SIGN IN"}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.signupContainer}>
@@ -143,6 +203,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     marginBottom: 30,
+  },
+  buttonDisabled: {
+    backgroundColor: "#8fa3d6", // Lighter blue when disabled
   },
   buttonText: {
     color: "#fff",

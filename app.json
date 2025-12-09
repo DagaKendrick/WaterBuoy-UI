@@ -23,7 +23,10 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro",
+      "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+      
     },
     "plugins": [
       "expo-router",
@@ -47,3 +50,5 @@
     }
   }
 }
+
+

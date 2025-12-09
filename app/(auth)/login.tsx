@@ -3,13 +3,26 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import api from "hooks/http";
 import { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+/* =========================
+   HARD-CODED ADMIN ACCOUNT
+   ========================= */
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "admin123";
 
 export default function Login() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -17,73 +30,66 @@ export default function Login() {
       return;
     }
 
-    setLoading(true); // Start loading
+    setLoading(true);
 
     try {
-      // Make API call to your login endpoint
+      /* =========================
+         ADMIN LOGIN (NO API)
+         ========================= */
+      if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        await AsyncStorage.multiSet([
+          ["isLoggedIn", "true"],
+          [
+            "userData",
+            JSON.stringify({
+              username: "admin",
+              role: "admin",
+            }),
+          ],
+        ]);
+
+        router.replace("/(tabs)/home");
+        return;
+      }
+
+      /* =========================
+         NORMAL API LOGIN (LATER)
+         ========================= */
       const response = await api.post("/login", {
-        username: username, // or email depending on your API
-        password: password,
+        username,
+        password,
       });
 
-      // Check if login was successful based on your API response structure
-      if (response.data.success || response.data.token) {
-        // Store the authentication token if your API returns one
+      if (response.data?.success || response.data?.token) {
         if (response.data.token) {
           await AsyncStorage.setItem("authToken", response.data.token);
         }
-        
-        // Store user data if needed
+
         if (response.data.user) {
-          await AsyncStorage.setItem("userData", JSON.stringify(response.data.user));
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(response.data.user)
+          );
         }
-        
-        // Set login status
+
         await AsyncStorage.setItem("isLoggedIn", "true");
-        
-        // Navigate to home
         router.replace("/(tabs)/home");
       } else {
-        // Handle API-specific error messages
-        const errorMessage = response.data.message || "Invalid credentials";
-        Alert.alert("Login Failed", errorMessage);
+        Alert.alert("Login Failed", "Invalid credentials");
       }
-    } catch (error: any) {
-      // Handle different types of errors
-      let errorMessage = "An error occurred during login";
-      
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        if (error.response.status === 401) {
-          errorMessage = "Invalid username or password";
-        } else if (error.response.status === 400) {
-          errorMessage = "Bad request. Please check your input.";
-        } else if (error.response.status === 500) {
-          errorMessage = "Server error. Please try again later.";
-        } else if (error.response.data?.message) {
-          errorMessage = error.response.data.message;
-        }
-      } else if (error.request) {
-        // The request was made but no response was received
-        errorMessage = "No response from server. Check your connection.";
-      } else {
-        // Something happened in setting up the request
-        errorMessage = error.message || "Network error";
-      }
-      
-      Alert.alert("Login Error", errorMessage);
+    } catch (error) {
+      Alert.alert(
+        "Login Error",
+        "API unavailable. Use the admin account for now."
+      );
       console.error("Login error:", error);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
   return (
-    <LinearGradient
-      colors={["#ffffff", "#ffffff"]} // White background
-      style={styles.container}
-    >
+    <LinearGradient colors={["#ffffff", "#ffffff"]} style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.hello}>Hello</Text>
         <Text style={styles.signIn}>Sign in!</Text>
@@ -91,7 +97,7 @@ export default function Login() {
 
       <View style={styles.loginCard}>
         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Username / Email</Text> {/* Changed label */}
+          <Text style={styles.inputLabel}>Username / Email</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter your username or email"
@@ -99,7 +105,7 @@ export default function Login() {
             autoCapitalize="none"
             value={username}
             onChangeText={setUsername}
-            editable={!loading} // Disable when loading
+            editable={!loading}
           />
         </View>
 
@@ -112,7 +118,7 @@ export default function Login() {
             secureTextEntry
             value={password}
             onChangeText={setPassword}
-            editable={!loading} // Disable when loading
+            editable={!loading}
           />
         </View>
 
@@ -120,10 +126,10 @@ export default function Login() {
           <Text style={styles.forgotPasswordText}>Forgot password?</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={[styles.button, loading && styles.buttonDisabled]} 
+        <TouchableOpacity
+          style={[styles.button, loading && styles.buttonDisabled]}
           onPress={handleLogin}
-          disabled={loading} // Disable button when loading
+          disabled={loading}
         >
           <Text style={styles.buttonText}>
             {loading ? "LOGGING IN..." : "SIGN IN"}
@@ -155,7 +161,6 @@ const styles = StyleSheet.create({
   },
   hello: {
     fontSize: 40,
-    fontWeight: "normal",
     color: "#1D4ED8",
     marginBottom: 5,
   },
@@ -166,10 +171,8 @@ const styles = StyleSheet.create({
   },
   loginCard: {
     width: "85%",
-    backgroundColor: "transparent",
   },
   inputContainer: {
-    width: "100%",
     marginBottom: 30,
   },
   inputLabel: {
@@ -179,7 +182,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   input: {
-    width: "100%",
     backgroundColor: "#f8f8f8",
     padding: 15,
     borderRadius: 10,
@@ -197,7 +199,6 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   button: {
-    width: "100%",
     backgroundColor: "#1D4ED8",
     padding: 18,
     borderRadius: 10,
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   buttonDisabled: {
-    backgroundColor: "#8fa3d6", // Lighter blue when disabled
+    backgroundColor: "#8fa3d6",
   },
   buttonText: {
     color: "#fff",
@@ -215,7 +216,6 @@ const styles = StyleSheet.create({
   signupContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
   },
   signupText: {
     fontSize: 14,

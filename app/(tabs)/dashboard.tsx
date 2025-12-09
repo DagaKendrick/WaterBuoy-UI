@@ -6,13 +6,20 @@ import { Link } from 'expo-router';
 export default function EcoBuoyDashboard() {
   
   const activeBuoys = Math.floor(Math.random() * 10) + 5; 
-  const trashCollected = (Math.random() * 5000 + 500).toFixed(1); 
+  const trashCollectedTotal = (Math.random() * 5000 + 500).toFixed(1); 
   const alertsCount = Math.floor(Math.random() * 5); 
   const newAlerts = Math.floor(Math.random() * 3); 
   const collectionToday = (Math.random() * 500 + 50).toFixed(0); 
 
+  // Trash categories with random percentages
+  const categories = ['Plastic', 'Metal Cans', 'Textiles', 'Rubber', 'Paper'];
+  const normalizedPercentages = categories.map(() => Math.floor(Math.random() * 100));
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView 
+      style={styles.container} 
+      contentContainerStyle={[styles.contentContainer, { paddingBottom: 80 }]}
+    >
       {/* Header */}
       <Text style={styles.title}>EcoBuoy{'\n'}Dashboard</Text>
       <Text style={styles.subtitle}>
@@ -45,14 +52,26 @@ export default function EcoBuoyDashboard() {
         {/* Trash Collected Card */}
         <View style={styles.card}>
           <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>Trash Collected</Text>
-            <Text style={styles.cardValue}>{trashCollected} kg</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Text style={styles.cardTitle}>Trash Collected</Text>
+              <MaterialIcons name="delete-outline" size={28} color="#22C55E" />
+            </View>
+            <Text style={styles.cardValue}>{trashCollectedTotal} kg</Text>
             <View style={styles.cardNoteRow}>
               <MaterialCommunityIcons name="wave" size={12} color="#6B7280" />
               <Text style={styles.cardNote}>+{Math.floor(Math.random() * 500)}kg today</Text>
             </View>
+
+            {/* Trash Category Breakdown */}
+            <View style={{ marginTop: 10 }}>
+              {categories.map((cat, index) => (
+                <View key={cat} style={styles.categoryRow}>
+                  <Text style={styles.categoryLabel}>{cat}</Text>
+                  <Text style={styles.categoryValue}>{normalizedPercentages[index]}%</Text>
+                </View>
+              ))}
+            </View>
           </View>
-          <MaterialIcons name="delete-outline" size={28} color="#22C55E" />
         </View>
 
         {/* Alerts Card */}
@@ -133,6 +152,9 @@ const styles = StyleSheet.create({
   cardValue: { marginTop: 6, fontSize: 24, fontWeight: '700', color: '#111827' },
   cardNoteRow: { marginTop: 6, flexDirection: 'row', alignItems: 'center' },
   cardNote: { marginLeft: 6, fontSize: 12, color: '#6B7280' },
+  categoryRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 },
+  categoryLabel: { fontSize: 12, color: '#374151' },
+  categoryValue: { fontSize: 12, fontWeight: '700', color: '#111827' },
   alertsContainer: { marginTop: 40, backgroundColor: '#fff', borderRadius: 16, padding: 16, elevation: 4, shadowColor: '#000', shadowOpacity: 0.1, shadowOffset: { width: 0, height: 2 }, shadowRadius: 4 },
   alertsHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   alertsTitle: { fontSize: 16, fontWeight: '600', color: '#374151', marginLeft: 6 },

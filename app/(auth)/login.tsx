@@ -23,6 +23,7 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // toggle for password visibility
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -111,15 +112,27 @@ export default function Login() {
 
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="*********"
-            placeholderTextColor="#999"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-            editable={!loading}
-          />
+          <View style={styles.passwordWrapper}>
+            <TextInput
+              style={styles.inputPassword}
+              placeholder="*********"
+              placeholderTextColor="#999"
+              secureTextEntry={!showPassword}   // toggle
+              autoCapitalize="none"
+              autoCorrect={false}
+              textContentType="none"
+              keyboardType="default"
+              value={password}
+              onChangeText={setPassword}
+              editable={!loading}
+            />
+            <TouchableOpacity
+              style={styles.showButton}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <Text style={styles.showButtonText}>{showPassword ? "Hide" : "Show"}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <TouchableOpacity style={styles.forgotPassword}>
@@ -189,6 +202,31 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e0e0e0",
     color: "#000",
+  },
+  passwordWrapper: {
+    position: "relative",
+    width: "100%",
+  },
+  inputPassword: {
+    backgroundColor: "#f8f8f8",
+    padding: 15,
+    borderRadius: 10,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    color: "#000",
+    paddingRight: 60, // space for Show/Hide
+  },
+  showButton: {
+    position: "absolute",
+    right: 15,
+    top: 0,
+    bottom: 0,
+    justifyContent: "center",
+  },
+  showButtonText: {
+    color: "#1D4ED8",
+    fontWeight: "bold",
   },
   forgotPassword: {
     alignSelf: "flex-end",

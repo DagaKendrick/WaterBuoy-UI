@@ -69,7 +69,7 @@ export default function ProfilePage() {
       style={styles.container}
     >
       <StatusBar barStyle="dark-content" />
-      
+
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
@@ -150,14 +150,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
+  /* Removed the paddingTop that caused black bar */
   header: {
     width: '100%',
-    paddingTop: 60,
     paddingHorizontal: 24,
     paddingBottom: 20,
+    paddingTop: 20,   // cleaner, minimal top spacing
     flexDirection: 'row',
     alignItems: 'center',
   },
+
   backButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingHorizontal: 12,

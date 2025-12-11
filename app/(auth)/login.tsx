@@ -189,8 +189,8 @@ export default function Login() {
   return (
     <LinearGradient colors={["#ffffff", "#ffffff"]} style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.hello}>Hello</Text>
-        <Text style={styles.signIn}>Sign in!</Text>
+        <Text style={styles.hello}>Ecobuoy</Text>
+        <Text style={styles.signIn}>Hello User, Welcome Back!</Text>
       </View>
 
       <View style={styles.loginCard}>
@@ -232,9 +232,6 @@ export default function Login() {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.forgotPassword}>
-          <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-        </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
@@ -273,10 +270,10 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: "#1D4ED8",
     marginBottom: 5,
+    fontWeight: "bold",
   },
   signIn: {
-    fontSize: 40,
-    fontWeight: "bold",
+    fontSize: 20,
     color: "#1D4ED8",
   },
   loginCard: {

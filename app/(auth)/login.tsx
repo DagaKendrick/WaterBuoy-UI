@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import api from "hooks/http";
 import { useState } from "react";
 import {
   Alert,
@@ -17,6 +17,8 @@ import {
    ========================= */
 const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "admin123";
+
+const API_BASE_URL = 'https://citc-ustpcdo.com/api/v1/';
 
 export default function Login() {
   const router = useRouter();
@@ -38,6 +40,10 @@ export default function Login() {
          ADMIN LOGIN (NO API)
          ========================= */
       if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        console.log("========== ADMIN LOGIN ==========");
+        console.log("[ADMIN] Username:", username);
+        console.log("[ADMIN] Password:", password);
+        
         await AsyncStorage.multiSet([
           ["isLoggedIn", "true"],
           [
@@ -49,41 +55,132 @@ export default function Login() {
           ],
         ]);
 
+        console.log("[ADMIN] ✅ LOGIN SUCCESSFUL!");
         router.replace("/(tabs)/home");
         return;
       }
 
       /* =========================
-         NORMAL API LOGIN (LATER)
+         NORMAL API LOGIN - DJOSER TOKEN AUTH
+         Using: POST /auth/token/login/
+         Then: GET /auth/users/me/
          ========================= */
-      const response = await api.post("/login", {
-        username,
-        password,
+      const trimmedUsername = username.trim();
+      const trimmedPassword = password.trim();
+      
+      // Check if input is email or ID number
+      const isIdNumber = /^\d+$/.test(trimmedUsername);
+      
+      console.log("\n========== API LOGIN REQUEST ==========");
+      console.log("[API] POST", API_BASE_URL + "auth/token/login/");
+      console.log("[API] Input type:", isIdNumber ? "ID Number" : "Email");
+      
+      // Create axios instance
+      const api = axios.create({
+        baseURL: API_BASE_URL,
+        timeout: 30000,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
-
-      if (response.data?.success || response.data?.token) {
-        if (response.data.token) {
-          await AsyncStorage.setItem("authToken", response.data.token);
-        }
-
-        if (response.data.user) {
-          await AsyncStorage.setItem(
-            "userData",
-            JSON.stringify(response.data.user)
-          );
-        }
-
-        await AsyncStorage.setItem("isLoggedIn", "true");
-        router.replace("/(tabs)/home");
-      } else {
-        Alert.alert("Login Failed", "Invalid credentials");
+      
+      // Step 1: Login to get auth token
+      let loginResponse;
+      try {
+        // Try with email first
+        console.log("[API] Trying login with email field...");
+        loginResponse = await api.post("auth/token/login/", {
+          email: trimmedUsername,
+          password: trimmedPassword
+        });
+        console.log("[API] Email login successful!");
+      } catch (emailError: any) {
+        console.log("[API] Email login failed, trying with id_number...");
+        // Try with id_number field
+        loginResponse = await api.post("auth/token/login/", {
+          id_number: trimmedUsername,
+          password: trimmedPassword
+        });
+        console.log("[API] ID number login successful!");
       }
-    } catch (error) {
-      Alert.alert(
-        "Login Error",
-        "API unavailable. Use the admin account for now."
-      );
-      console.error("Login error:", error);
+      
+      console.log("[API] Login Response Status:", loginResponse.status);
+      const authTokenValue = loginResponse.data.auth_token;
+      console.log("[API] Auth Token:", authTokenValue);
+      
+      // Step 2: Get user profile using the token
+      console.log("\n[API] GET", API_BASE_URL + "auth/users/me/");
+      const profileResponse = await api.get("auth/users/me/", {
+        headers: {
+          'Authorization': `Token ${authTokenValue}`
+        }
+      });
+      
+      console.log("[API] Profile Response Status:", profileResponse.status);
+      const userData = profileResponse.data;
+      
+      // Log user credentials
+      console.log("\n========== USER CREDENTIALS ==========");
+      console.log("[USER] ID:", userData.id);
+      console.log("[USER] Name:", `${userData.first_name} ${userData.last_name}`);
+      console.log("[USER] Email:", userData.email);
+      console.log("[USER] ID Number:", userData.id_number);
+      if (userData.department) {
+        console.log("[USER] Department:", userData.department.name);
+      }
+      console.log("==========================================");
+      
+      console.log("\n✅ LOGIN SUCCESSFUL!");
+      console.log("Logged in as:", `${userData.first_name} ${userData.last_name}`);
+      console.log("\n=== AUTH TOKEN GENERATED ===");
+      console.log("Token:", authTokenValue);
+      console.log("User ID:", userData.id);
+      console.log("User Name:", `${userData.first_name} ${userData.last_name}`);
+      console.log("User Email:", userData.email);
+      console.log("Expires At:", new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString());
+      
+      console.log("\nFull Token Object: {");
+      console.log(JSON.stringify({
+        token: authTokenValue,
+        user: userData,
+        expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
+      }, null, 2));
+      console.log("}");
+
+      // Store auth token and user data
+      await AsyncStorage.setItem("authToken", authTokenValue);
+      await AsyncStorage.setItem("userData", JSON.stringify(userData));
+      await AsyncStorage.setItem("isLoggedIn", "true");
+      
+      router.replace("/(tabs)/home");
+    } catch (error: any) {
+      console.log("\n❌ LOGIN FAILED");
+      console.log("[ERROR] Status:", error.response?.status);
+      console.log("[ERROR] Message:", error.message);
+      if (error.response?.data) {
+        console.log("[ERROR] Response:", JSON.stringify(error.response.data, null, 2));
+      }
+      
+      // Handle specific error cases
+      let errorMessage = "Invalid credentials. Please try again.";
+      
+      if (error.code === 'ECONNABORTED') {
+        errorMessage = "Request timeout - The server is taking too long to respond.";
+      } else if (error.code === 'ERR_NETWORK') {
+        errorMessage = "Network error - Cannot reach server";
+      } else if (error.response?.status === 400) {
+        errorMessage = error.response.data?.non_field_errors?.[0] || "Invalid credentials";
+      } else if (error.response?.status === 401) {
+        errorMessage = "Invalid email/ID number or password";
+      } else if (error.response?.data) {
+        errorMessage = error.response.data?.non_field_errors?.[0]
+          || error.response.data?.message
+          || error.response.data?.error
+          || errorMessage;
+      }
+      
+      Alert.alert("Login Error", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -151,7 +248,7 @@ export default function Login() {
 
         <View style={styles.signupContainer}>
           <Text style={styles.signupText}>Don't have account? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
             <Text style={styles.signupLink}>Sign up</Text>
           </TouchableOpacity>
         </View>

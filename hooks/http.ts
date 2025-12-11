@@ -1,8 +1,8 @@
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://cite-ustpcdo.com/api/v1/',
+    baseURL: 'https://citc-ustpcdo.com/api/v1/',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
@@ -14,6 +14,7 @@ const api = axios.create({
 api.interceptors.request.use(
     async (config) => {
         try {
+            // Add auth token if available
             const token = await AsyncStorage.getItem('authToken');
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
@@ -48,7 +49,7 @@ api.interceptors.response.use(
                 if (refreshToken) {
                     // Call refresh token endpoint
                     const response = await axios.post(
-                        'https://cite-ustpcdo.com/api/v1/auth/refresh',
+                        'https://citc-ustpcdo.com/api/v1/auth/refresh',
                         { refresh_token: refreshToken },
                         { baseURL: '' } // Override baseURL for this call
                     );
